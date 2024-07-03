@@ -1,7 +1,7 @@
 import User from "../models/user.model.js";
 import generateToken from "../utils/generateToken.js";
-import { generateHashedPassword } from "../utils/hashPassword.js";
-import { signupSchema } from "../utils/zodValidation.js";
+import { generateHashedPassword, verifyPassword } from "../utils/hashPassword.js";
+import { loginSchema, signupSchema } from "../utils/zodValidation.js";
 
 const signupUser = async (req, res) => {
     try {
@@ -44,7 +44,34 @@ const signupUser = async (req, res) => {
 }
 
 const loginUser = async (req, res) => {
-
+    try {
+        const {email, password} = req.body;
+        const isValid = loginSchema.safeParse({email, password})
+    
+        if (!isValid.success) {
+            return res.send("Zod :: Data validation error :: ", isValid.error)
+        }
+    
+        const existedUser = await User.findOne({email})
+        if(existedUser) {
+            return res.status(400).send("User with email not exist.")
+        }
+    
+        const isPasswordCorrect = await verifyPassword(password, existedUser.password)
+        if(!isPasswordCorrect) {
+            return res.status(400).send("Incorrect password. Please try again")
+        }
+    
+        const token = generateToken({
+            _id: existedUser._id,
+            username: existedUser.username,
+            email: existedUser.email,
+        })
+    
+        res.cookie("token", token).redirect("/")
+    } catch (error) {
+        return res.status(500).send("Server error. Please try again later.");
+    }
 }
 const logoutUser = async (req, res) => {
 
