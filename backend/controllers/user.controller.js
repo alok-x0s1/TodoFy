@@ -1,6 +1,6 @@
 
 const signupUser = async (req, res) => {
-
+    const {username, email, password} = req.body;
 }
 
 const loginUser = async (req, res) => {
