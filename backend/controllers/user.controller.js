@@ -11,7 +11,7 @@ const signupUser = async (req, res) => {
 		const { username, email, password } = req.body;
 		const isValid = signupSchema.safeParse({ username, email, password });
 		if (!isValid.success) {
-			return res.send("Zod :: Data validation error :: ", isValid.error);
+			return res.send(isValid.error);
 		}
 
 		const existedUser = await User.findOne({
@@ -44,7 +44,7 @@ const signupUser = async (req, res) => {
 			email: user.email,
 		});
 
-		res.cookie("token", token).redirect("/");
+		res.cookie("token", token).json({message: "User created successfully", createdUser});
 	} catch (error) {
 		return res.status(500).send("Server error. Please try again later.");
 	}
@@ -56,11 +56,11 @@ const loginUser = async (req, res) => {
 		const isValid = loginSchema.safeParse({ email, password });
 
 		if (!isValid.success) {
-			return res.send("Zod :: Data validation error :: ", isValid.error);
+			return res.send(isValid.error);
 		}
 
 		const existedUser = await User.findOne({ email });
-		if (existedUser) {
+		if (!existedUser) {
 			return res.status(400).send("User with email not exist.");
 		}
 
@@ -78,14 +78,14 @@ const loginUser = async (req, res) => {
 			email: existedUser.email,
 		});
 
-		res.cookie("token", token).redirect("/");
+		res.cookie("token", token).json({message: "User login successfully", user: existedUser});
 	} catch (error) {
 		return res.status(500).send("Server error. Please try again later.");
 	}
 };
 const logoutUser = async (_, res) => {
 	res.cookie("token", "");
-	res.redirect("/");
+	res.send("Logout successfully.");
 };
 
 export { signupUser, loginUser, logoutUser };
