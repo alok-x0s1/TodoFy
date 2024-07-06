@@ -12,7 +12,7 @@ const isLoggedIn = async (req, res, next) => {
 
 		const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
-		const user = await User.findById(decodedToken._id).select("-password");
+		const user = await User.findById(decodedToken._id).select("-password -todos");
 		req.user = user;
 	} catch (error) {
 		return res.status(401).send(error?.message || "Invalid access Token");
