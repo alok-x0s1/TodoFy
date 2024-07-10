@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const Signup = () => {
   const [username, setUsername] = useState('');
@@ -74,7 +75,7 @@ const Signup = () => {
               <label htmlFor="remember_me" className="block ml-2 text-sm text-gray-400">Remember me</label>
             </div>
             <div className="text-sm">
-              <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">Forgot your password?</a>
+              <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">Already have an account?</Link>
             </div>
           </div>
           <div>
