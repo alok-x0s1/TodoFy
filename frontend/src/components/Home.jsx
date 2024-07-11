@@ -35,9 +35,9 @@ const Home = () => {
               <Link to="/login" className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded mr-2">
                 Login
               </Link>
-              <button className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+              <Link to={"/create-todo"} className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
                 Add To-Do
-              </button>
+              </Link>
             </div>
           </div>
         </div>
