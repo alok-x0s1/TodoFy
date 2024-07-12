@@ -31,7 +31,7 @@ const signupUser = async (req, res) => {
 			password: hashedPassword,
 		});
 
-		const createdUser = await User.findById(user._id);
+		const createdUser = await User.findById(user._id).select("-password");
 		if (!createdUser) {
 			return res
 				.status(500)
