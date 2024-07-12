@@ -1,0 +1,38 @@
+@keyframes dot-pulse {
+	0%,
+	80%,
+	100% {
+		transform: scale(0);
+	}
+	40% {
+		transform: scale(1);
+	}
+}
+
+.loader {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 64px; /* Adjust height as needed */
+}
+
+.dot {
+	width: 16px;
+	height: 16px;
+	margin: 0 4px;
+	background-color: #ffffff;
+	border-radius: 50%;
+	animation: dot-pulse 1.5s infinite ease-in-out;
+}
+
+.dot1 {
+	animation-delay: -0.3s;
+}
+
+.dot2 {
+	animation-delay: -0.15s;
+}
+
+.dot3 {
+	animation-delay: 0s;
+}
