@@ -1,14 +1,43 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import Loader from "./Loader";
+import axios from "axios";
 
 const Signup = () => {
 	const [username, setUsername] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 
-	const handleSignup = (e) => {
+	const [response, setResponse] = useState(null);
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState(null);
+
+	const navigate = useNavigate();
+
+	const apiUrl = import.meta.env.VITE_API_URL;
+
+	const handleSignup = async (e) => {
 		e.preventDefault();
-		// Handle signup logic here
+
+		setLoading(true);
+		setError(null);
+		try {
+			const res = await axios.post(`${apiUrl}/api/v1/users/signup`, {
+				username,
+				email,
+				password,
+			});
+			setResponse(res.data);
+			console.log("Response", res.data);
+
+			if (res.status === 200) {
+				navigate("/profile");
+			}
+		} catch (error) {
+			setError(error.message);
+		} finally {
+			setLoading(false);
+		}
 	};
 
 	return (
@@ -73,6 +102,7 @@ const Signup = () => {
 								type="password"
 								autoComplete="current-password"
 								required
+								minLength={8}
 								className="relative block w-full px-3 py-2 border border-gray-700 rounded-b-md placeholder-gray-500 text-gray-300 bg-gray-800 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
 								placeholder="Password"
 								value={password}
@@ -104,29 +134,33 @@ const Signup = () => {
 							</Link>
 						</div>
 					</div>
-					<div>
-						<button
-							type="submit"
-							className="relative flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md group hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-						>
-							<span className="absolute inset-y-0 left-0 flex items-center pl-3">
-								<svg
-									className="w-5 h-5 text-indigo-500 group-hover:text-indigo-400"
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 20 20"
-									fill="currentColor"
-									aria-hidden="true"
-								>
-									<path
-										fillRule="evenodd"
-										d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v4a1 1 0 002 0V7zm-1 8a1.5 1.5 0 110-3 1.5 1.5 0 010 3z"
-										clipRule="evenodd"
-									/>
-								</svg>
-							</span>
-							Sign up
-						</button>
-					</div>
+					{loading ? (
+						<Loader />
+					) : (
+						<div>
+							<button
+								type="submit"
+								className="relative flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md group hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+							>
+								<span className="absolute inset-y-0 left-0 flex items-center pl-3">
+									<svg
+										className="w-5 h-5 text-indigo-500 group-hover:text-indigo-400"
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 20 20"
+										fill="currentColor"
+										aria-hidden="true"
+									>
+										<path
+											fillRule="evenodd"
+											d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v4a1 1 0 002 0V7zm-1 8a1.5 1.5 0 110-3 1.5 1.5 0 010 3z"
+											clipRule="evenodd"
+										/>
+									</svg>
+								</span>
+								Sign up
+							</button>
+						</div>
+					)}
 				</form>
 			</div>
 		</div>
