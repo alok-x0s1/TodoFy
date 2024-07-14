@@ -20,7 +20,10 @@ const Login = () => {
 		setLoading(true);
 		setError(null);
 		try {
-			const res = await axios.post(`${apiUrl}/api/v1/users/login`);
+			const res = await axios.post(`${apiUrl}/api/v1/users/login`, {
+				email,
+				password
+			});
 			setResponse(res.data);
 			console.log("Response", res.data);
 
