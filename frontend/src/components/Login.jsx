@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
 	const [email, setEmail] = useState("");
@@ -9,6 +9,8 @@ const Login = () => {
 	const [response, setResponse] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
+
+	const navigate = useNavigate()
 
 	const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -21,6 +23,10 @@ const Login = () => {
 			const res = await axios.post(`${apiUrl}/api/v1/users/login`);
 			setResponse(res.data);
 			console.log("Response", res.data);
+
+			if (res.status === 200) {
+				navigate("/profile");
+			}
 		} catch (error) {
 			setError(error.message);
 		} finally {
