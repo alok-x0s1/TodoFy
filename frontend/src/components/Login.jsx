@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -5,9 +6,26 @@ const Login = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 
-	const handleLogin = (e) => {
+	const [response, setResponse] = useState(null);
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState(null);
+
+	const apiUrl = import.meta.env.VITE_API_URL;
+
+	const handleLogin = async (e) => {
 		e.preventDefault();
-		// Handle login logic here
+
+		setLoading(true);
+		setError(null);
+		try {
+			const res = await axios.post(`${apiUrl}/api/v1/users/login`);
+			setResponse(res.data);
+			console.log("Response", res.data);
+		} catch (error) {
+			setError(error.message);
+		} finally {
+			setLoading(false);
+		}
 	};
 
 	return (
