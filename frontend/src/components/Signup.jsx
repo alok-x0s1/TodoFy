@@ -42,6 +42,9 @@ const Signup = () => {
 
 	return (
 		<div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700">
+		{
+			error ? <div className="absolute top-8 left-1/2 -translate-x-1/2 p-4 bg-red-600 text-white">Something went wrong</div> : null
+		}
 			<div className="w-full max-w-md p-8 space-y-8 bg-gray-900 rounded-lg shadow-lg animate-fade-in">
 				<Link
 					to={"/"}
