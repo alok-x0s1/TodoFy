@@ -11,7 +11,10 @@ const signupUser = async (req, res) => {
 		const { username, email, password } = req.body;
 		const isValid = signupSchema.safeParse({ username, email, password });
 		if (!isValid.success) {
-			return res.send(isValid.error);
+			return res.status(400).json({
+				message: "Validation error",
+				errors: isValid.error.errors,
+			});
 		}
 
 		const existedUser = await User.findOne({
@@ -44,7 +47,10 @@ const signupUser = async (req, res) => {
 			email: user.email,
 		});
 
-		res.cookie("token", token).json({message: "User created successfully", createdUser});
+		res.cookie("token", token).json({
+			message: "User created successfully",
+			createdUser,
+		});
 	} catch (error) {
 		return res.status(500).send("Server error. Please try again later.");
 	}
@@ -56,7 +62,10 @@ const loginUser = async (req, res) => {
 		const isValid = loginSchema.safeParse({ email, password });
 
 		if (!isValid.success) {
-			return res.send(isValid.error);
+			return res.status(400).json({
+				message: "Validation error",
+				errors: isValid.error.errors,
+			});
 		}
 
 		const existedUser = await User.findOne({ email });
@@ -78,7 +87,10 @@ const loginUser = async (req, res) => {
 			email: existedUser.email,
 		});
 
-		res.cookie("token", token).json({message: "User login successfully", user: existedUser});
+		res.cookie("token", token).json({
+			message: "User login successfully",
+			user: existedUser,
+		});
 	} catch (error) {
 		return res.status(500).send("Server error. Please try again later.");
 	}

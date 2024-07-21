@@ -78,18 +78,16 @@ const getAllTodos = async (req, res) => {
 	try {
 		const user = req.user;
 		const ownerId = user._id.toString();
-	
+
 		const todos = await Todo.find({
-			owner: ownerId
-		})
-	
-		if(todos.length <= 0) {
-			return res
-					.status(404)
-					.send("Todo not found");
+			owner: ownerId,
+		});
+
+		if (todos.length <= 0) {
+			return res.status(404).send("Todo not found");
 		}
-	
-		res.status(200).send(todos)
+
+		res.status(200).send(todos);
 	} catch (error) {
 		return res.status(500).send("Server error. Please try again later.");
 	}
