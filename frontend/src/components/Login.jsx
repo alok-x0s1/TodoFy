@@ -28,7 +28,7 @@ const Login = () => {
 			console.log("Response", res.data);
 
 			if (res.status === 200) {
-				navigate("/profile");
+				navigate(`/profile/${response.user.username}`);
 			}
 		} catch (error) {
 			setError(error.message);

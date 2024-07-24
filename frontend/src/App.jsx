@@ -26,7 +26,7 @@ function App() {
       element: <CreateTodo />
     },
     {
-      path: "/profile",
+      path: "/profile/:username",
       element: <Profile />
     },
     {
