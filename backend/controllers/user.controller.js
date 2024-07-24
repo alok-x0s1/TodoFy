@@ -100,4 +100,11 @@ const logoutUser = async (_, res) => {
 	res.send("Logout successfully.");
 };
 
-export { signupUser, loginUser, logoutUser };
+const getUserProfile = async (req, res) => {
+	const {username} = req.params;
+
+	const user = await User.findOne({username}).populate("todos");
+	res.send(user)
+}
+
+export { signupUser, loginUser, logoutUser, getUserProfile };
