@@ -101,10 +101,13 @@ const logoutUser = async (_, res) => {
 };
 
 const getUserProfile = async (req, res) => {
-	const {username} = req.params;
+	const { username } = req.params;
 
-	const user = await User.findOne({username}).populate("todos");
-	res.send(user)
-}
+	const user = await User.findOne({ username }).populate("todos");
+	if (!user) {
+		return res.status(404).send("User not found");
+	}
+	res.send(user);
+};
 
 export { signupUser, loginUser, logoutUser, getUserProfile };
