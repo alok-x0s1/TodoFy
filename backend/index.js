@@ -14,8 +14,8 @@ app.use(
 );
 
 // Imports
-import userRouter from "../routes/user.route.js";
-import todoRouter from "../routes/todo.route.js";
+import userRouter from "./routes/user.route.js";
+import todoRouter from "./routes/todo.route.js";
 
 // Routes
 app.use("/api/v1/users", userRouter);
