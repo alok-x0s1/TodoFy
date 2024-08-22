@@ -12,8 +12,9 @@ const signupUser = async (req, res) => {
 		const isValid = signupSchema.safeParse({ username, email, password });
 		if (!isValid.success) {
 			return res.status(400).json({
+				success: false,
 				message: "Validation error",
-				errors: isValid.error.errors,
+				error: isValid.error.issues[0].message,
 			});
 		}
 
@@ -22,9 +23,10 @@ const signupUser = async (req, res) => {
 		});
 
 		if (existedUser) {
-			return res
-				.status(400)
-				.send("User with email or password already exist.");
+			return res.status(400).json({
+				success: false,
+				message: "User already exists.",
+			});
 		}
 
 		const hashedPassword = await generateHashedPassword(password);
@@ -36,9 +38,10 @@ const signupUser = async (req, res) => {
 
 		const createdUser = await User.findById(user._id).select("-password");
 		if (!createdUser) {
-			return res
-				.status(500)
-				.send("Internal server error :: Error while creating the user");
+			return res.status(500).json({
+				success: false,
+				message: "Error while creating the user",
+			});
 		}
 
 		const token = generateToken({
@@ -48,11 +51,17 @@ const signupUser = async (req, res) => {
 		});
 
 		res.cookie("token", token).json({
+			success: true,
 			message: "User created successfully",
-			createdUser,
+			user: createdUser,
+			token: token,
 		});
 	} catch (error) {
-		return res.status(500).send("Server error. Please try again later.");
+		return res.status(500).json({
+			success: false,
+			message: "Please try again later.",
+			error: error.message,
+		});
 	}
 };
 
@@ -63,14 +72,18 @@ const loginUser = async (req, res) => {
 
 		if (!isValid.success) {
 			return res.status(400).json({
+				success: false,
 				message: "Validation error",
-				errors: isValid.error.errors,
+				error: isValid.error.issues[0].message,
 			});
 		}
 
 		const existedUser = await User.findOne({ email });
 		if (!existedUser) {
-			return res.status(400).send("User with email not exist.");
+			return res.status(400).json({
+				success: false,
+				message: "User with email not exist.",
+			});
 		}
 
 		const isPasswordCorrect = await verifyPassword(
@@ -78,7 +91,11 @@ const loginUser = async (req, res) => {
 			existedUser.password
 		);
 		if (!isPasswordCorrect) {
-			return res.status(400).send("Incorrect password. Please try again");
+			return res.status(400).json({
+				success: false,
+				message: "Incorrect password. Please try again",
+				error: "Invalid credentials",
+			});
 		}
 
 		const token = generateToken({
@@ -87,27 +104,61 @@ const loginUser = async (req, res) => {
 			email: existedUser.email,
 		});
 
+		const { password: _, ...user } = existedUser.toObject();
 		res.cookie("token", token).json({
+			success: true,
 			message: "User login successfully",
-			user: existedUser,
+			user,
+			token: token,
 		});
 	} catch (error) {
-		return res.status(500).send("Server error. Please try again later.");
+		return res.status(500).json({
+			success: false,
+			message: "Please try again later.",
+			error: error.message,
+		});
 	}
 };
+
 const logoutUser = async (_, res) => {
-	res.cookie("token", "");
-	res.send("Logout successfully.");
+	try {
+		return res.status(200).clearCookie("token").json({
+			success: true,
+			message: "Logged out successfully",
+		});
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			message: "Please try again later.",
+			error: error.message,
+		});
+	}
 };
 
 const getUserProfile = async (req, res) => {
-	const { username } = req.params;
+	try {
+		const user = await User.findById(req.user._id)
+			.select("-password")
+			.populate("todos");
 
-	const user = await User.findOne({ username }).populate("todos");
-	if (!user) {
-		return res.status(404).send("User not found");
+		if (!user) {
+			return res.status(404).json({
+				success: false,
+				message: "User not found",
+			});
+		}
+
+		return res.status(200).json({
+			success: true,
+			user,
+		});
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			message: "Please try again later.",
+			error: error.message,
+		});
 	}
-	res.send(user);
 };
 
 export { signupUser, loginUser, logoutUser, getUserProfile };
