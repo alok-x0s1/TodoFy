@@ -5,8 +5,7 @@ import { todoZodSchema } from "../utils/zodValidation.js";
 const createTodo = async (req, res) => {
 	try {
 		const { title, description, isCompleted } = req.body;
-		const user = req.user;
-		const ownerId = user._id.toString();
+		const ownerId = req.user.id;
 		const isValid = todoZodSchema.safeParse({
 			title,
 			description,
@@ -16,8 +15,9 @@ const createTodo = async (req, res) => {
 
 		if (!isValid.success) {
 			return res.status(400).json({
+				success: false,
 				message: "Validation error",
-				errors: isValid.error.errors,
+				error: isValid.error.issues[0].message,
 			});
 		}
 
@@ -25,13 +25,14 @@ const createTodo = async (req, res) => {
 			title,
 			description,
 			isCompleted,
-			owner: user._id,
+			owner: req.user._id,
 		});
 
 		if (!todo) {
-			return res
-				.status(500)
-				.send("Internal server error :: Error while creating the todo");
+			return res.status(500).json({
+				success: false,
+				message: "Error while creating the todo",
+			});
 		}
 
 		const updateUser = await User.findByIdAndUpdate(
@@ -40,14 +41,103 @@ const createTodo = async (req, res) => {
 			{ new: true, runValidators: true }
 		);
 		if (!updateUser) {
-			return res
-				.status(500)
-				.send("Internal server error :: Error while adding the todo");
+			return res.status(500).json({
+				success: false,
+				message: "Error while updating the user",
+			});
 		}
 
-		res.status(200).json({ message: "Todo created successfully", todo });
+		res.status(200).json({
+			success: true,
+			message: "Todo created successfully",
+			todo,
+		});
 	} catch (error) {
-		return res.status(500).send("Server error. Please try again later.");
+		return res.status(500).json({
+			success: false,
+			message: "Please try again later.",
+			error: error.message,
+		});
+	}
+};
+
+const updateTodo = async (req, res) => {
+	try {
+		const { title, description, isCompleted } = req.body;
+		const { id } = req.params;
+		const ownerId = req.user.id;
+		const isValid = todoZodSchema.safeParse({
+			title,
+			description,
+			isCompleted,
+			owner: ownerId,
+		});
+
+		if (!isValid.success) {
+			return res.status(400).json({
+				success: false,
+				message: "Validation error",
+				error: isValid.error.issues[0].message,
+			});
+		}
+
+		const todo = await Todo.findByIdAndUpdate(
+			id,
+			{ title, description, isCompleted },
+			{ new: true, runValidators: true }
+		);
+
+		if (!todo) {
+			return res.status(404).json({
+				success: false,
+				message: "Todo not found",
+			});
+		}
+
+		res.status(200).json({
+			success: true,
+			message: "Todo updated successfully",
+			todo,
+		});
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			message: "Please try again later.",
+			error: error.message,
+		});
+	}
+};
+
+const getSingleTodo = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const ownerId = req.user.id;
+		const todo = await Todo.findById(id).populate("owner", "username");
+
+		if (!todo) {
+			return res.status(404).json({
+				success: false,
+				message: "Todo not found",
+			});
+		}
+		if (todo.owner._id.toString() !== ownerId) {
+			return res.status(403).json({
+				success: false,
+				message: "Unauthorized access",
+			});
+		}
+
+		res.status(200).json({
+			success: true,
+			message: "Todo retrieved successfully",
+			todo,
+		});
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			message: "Please try again later.",
+			error: error.message,
+		});
 	}
 };
 
@@ -57,40 +147,60 @@ const deleteTodo = async (req, res) => {
 		const existedTodo = await Todo.findById(id);
 
 		if (!existedTodo) {
-			return res.status(404).send("Todo not found with the given id.");
+			return res.status(404).json({
+				success: false,
+				message: "Todo not found",
+			});
 		}
 
 		const todo = await Todo.findByIdAndDelete(id);
 
 		if (!todo) {
-			return res
-				.status(500)
-				.send("Internal server error :: Error while deleting the todo");
+			return res.status(500).json({
+				success: false,
+				message: "Error while deleting the todo",
+			});
 		}
 
-		res.status(200).json({ message: "Todo deleted successfully", todo });
+		res.status(200).json({
+			success: true,
+			message: "Todo deleted successfully",
+			todo,
+		});
 	} catch (error) {
-		return res.status(500).send("Server error. Please try again later.");
+		return res.status(500).json({
+			success: false,
+			message: "Please try again later.",
+			error: error.message,
+		});
 	}
 };
 
 const getAllTodos = async (req, res) => {
 	try {
-		const user = req.user;
-		const ownerId = user._id.toString();
-
 		const todos = await Todo.find({
-			owner: ownerId,
+			owner: req.user._id,
 		});
 
 		if (todos.length <= 0) {
-			return res.status(404).send("Todo not found");
+			return res.status(404).json({
+				success: false,
+				message: "No todos found",
+			});
 		}
 
-		res.status(200).send(todos);
+		res.status(200).json({
+			success: true,
+			message: "Todos fetched successfully",
+			todos,
+		});
 	} catch (error) {
-		return res.status(500).send("Server error. Please try again later.");
+		return res.status(500).json({
+			success: false,
+			message: "Please try again later.",
+			error: error.message,
+		});
 	}
 };
 
-export { createTodo, deleteTodo, getAllTodos };
+export { createTodo, updateTodo, deleteTodo, getAllTodos, getSingleTodo };
