@@ -1,45 +1,56 @@
 import "./App.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Login from "./components/Login";
-import Home from "./components/Home";
-import Signup from "./components/Signup";
-import CreateTodo from "./components/CreateTodo";
-import Profile from "./components/Profile";
 import Loader from "./components/Loader";
+import { CreateTodo, EditTodo, Home, Login, Profile, Signup, SingleTodo } from "./pages";
+import NotFound from "./components/NotFound";
 
 function App() {
-  const router = createBrowserRouter([
-    {
-      path: "/",
-      element: <Home />
-    },
-    {
-      path: "/login",
-      element: <Login />
-    },
-    {
-      path: "/signup",
-      element: <Signup />
-    },
-    {
-      path: "/create-todo",
-      element: <CreateTodo />
-    },
-    {
-      path: "/profile/:username",
-      element: <Profile />
-    },
-    {
-      path: "/loading",
-      element: <Loader />
-    },
-  ]);
+	const router = createBrowserRouter([
+		{
+			path: "/",
+			element: <Home />,
+		},
+		{
+			path: "/login",
+			element: <Login />,
+		},
+		{
+			path: "/signup",
+			element: <Signup />,
+		},
+		{
+			path: "/profile",
+			element: <Profile />,
+		},
+		{
+			path: "/create-todo",
+			element: <CreateTodo />,
+		},
+		{
+			path: "/todos",
+			element: <Home />,
+		},{
+			path: "/todo/:id",
+            element: <SingleTodo />,
+		},{
+			path: "/todos/edit/:id",
+            element: <EditTodo />,
+		},
+		{
+			path: "/loading",
+			element: <Loader />,
+		},
+		{
+			path: "*",
+			element: <NotFound />,
+		},
+	]);
 
-  return (
-    <>
-      <RouterProvider router={router} />
-    </>
-  );
+	return (
+		<>
+			<RouterProvider router={router} />
+		</>
+	);
 }
 
 export default App;
