@@ -45,7 +45,7 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 text-white">
+    <div className="min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 text-white font-serif">
       <Navbar />
       {error ? (
         <div className="absolute top-24 left-1/2 -translate-x-1/2 p-4 bg-red-600 text-white rounded">
@@ -66,7 +66,7 @@ const Home = () => {
             </button>
           </div>
         ) : (
-          <div className="w-full max-w-7xl p-8 space-y-8">
+          <div className="w-full max-w-7xl px-8 space-y-8">
             <h3 className="text-2xl font-bold mb-4">Your To-Dos</h3>
             {loading ? (
               <Loader />
@@ -76,7 +76,7 @@ const Home = () => {
                   <Link
                     key={todo._id}
                     to={`/todo/${todo._id}`}
-                    className={`p-6 cursor-pointer rounded-lg shadow-lg border-l border-t border-b bg-gray-800 hover:bg-gray-700 duration-300 ${
+                    className={`p-6 cursor-pointer h-fit rounded-lg shadow-lg border-l border-t border-b bg-gray-800 hover:bg-gray-700 duration-300 ${
                       todo.isCompleted
                         ? "border-r-4 border-r-green-500"
                         : "border-r-4 border-r-red-500"

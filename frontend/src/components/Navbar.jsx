@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../features/authSlice";
+import { IoAddCircleOutline } from "react-icons/io5";
+import { TbLogin2, TbLogout2 } from "react-icons/tb";
 
 const Navbar = () => {
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -74,31 +76,30 @@ const Navbar = () => {
 								</span>
 								<button
 									onClick={handleLogout}
-									className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+									className="bg-red-600 hover:bg-red-700 duration-300 text-white font-bold py-2 px-4 rounded flex items-center gap-1"
 								>
-									Logout
+									<TbLogout2 /> Logout
 								</button>
 							</div>
 						) : (
 							<Link
 								to="/login"
-								className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded"
+								className="bg-indigo-600 hover:bg-indigo-700 duration-300 text-white font-bold py-2 px-4 rounded flex items-center gap-1"
 							>
-								Login
+								<TbLogin2 /> Login
 							</Link>
 						)}
 
 						<Link
 							to={isLoggedIn ? "/create-todo" : "/login"}
-							className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+							className="bg-green-600 hover:bg-green-700 duration-300 text-white font-bold py-2 px-4 rounded flex items-center gap-1"
 						>
-							Add To-Do
+							<IoAddCircleOutline /> Add
 						</Link>
 					</div>
 				</div>
 			</div>
 
-			
 			{isMobileMenuOpen && (
 				<div className="md:hidden absolute right-4 top-24 w-[300px] rounded shadow-lg bg-gray-800 h-fit px-2 pt-2 pb-3 space-y-1 sm:px-4 flex flex-col items-center gap-3">
 					<Link
@@ -124,25 +125,25 @@ const Navbar = () => {
 								</p>
 								<button
 									onClick={handleLogout}
-									className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+									className="bg-red-600 hover:bg-red-700 duration-300 text-white font-bold py-2 px-4 rounded flex items-center gap-1"
 								>
-									Logout
+									<TbLogout2 /> Logout
 								</button>
 							</div>
 						</>
 					) : (
 						<Link
 							to="/login"
-							className="bg-indigo-600 hover:bg-indigo-700 text-white block text-center font-bold py-2 px-4 rounded"
+							className="bg-indigo-600 hover:bg-indigo-700 duration-300 text-white text-center font-bold py-2 px-4 rounded flex items-center gap-1"
 							onClick={() => setIsMobileMenuOpen(false)}
 						>
-							Login
+							<TbLogin2 /> Login
 						</Link>
 					)}
 
 					<Link
 						to={isLoggedIn ? "/create-todo" : "/login"}
-						className="bg-green-600 hover:bg-green-700 text-white block text-center font-bold py-2 px-4 rounded"
+						className="bg-green-600 hover:bg-green-700 duration-300 text-white block text-center font-bold py-2 px-4 rounded"
 						onClick={() => setIsMobileMenuOpen(false)}
 					>
 						Add To-Do
