@@ -4,7 +4,11 @@ import {
 	generateHashedPassword,
 	verifyPassword,
 } from "../utils/hashPassword.js";
-import { loginSchema, signupSchema } from "../utils/zodValidation.js";
+import {
+	loginSchema,
+	signupSchema,
+	updateUserSchema,
+} from "../utils/zodValidation.js";
 
 const signupUser = async (req, res) => {
 	try {
@@ -30,13 +34,13 @@ const signupUser = async (req, res) => {
 		}
 
 		const hashedPassword = await generateHashedPassword(password);
-		const user = await User.create({
+		const newUser = await User.create({
 			username,
 			email,
 			password: hashedPassword,
 		});
 
-		const createdUser = await User.findById(user._id).select("-password");
+		const createdUser = await User.findById(newUser._id);
 		if (!createdUser) {
 			return res.status(500).json({
 				success: false,
@@ -45,15 +49,18 @@ const signupUser = async (req, res) => {
 		}
 
 		const token = generateToken({
-			_id: user._id,
-			username: user.username,
-			email: user.email,
+			_id: createdUser._id,
+			username: createdUser.username,
+			email: createdUser.email,
 		});
+
+		const { password: _, todos: _todos, ...user } = createdUser.toObject();
+		user.token = token;
 
 		res.cookie("token", token).json({
 			success: true,
 			message: "User created successfully",
-			user: createdUser,
+			user,
 			token: token,
 		});
 	} catch (error) {
@@ -105,11 +112,11 @@ const loginUser = async (req, res) => {
 		});
 
 		const { password: _, ...user } = existedUser.toObject();
+		user.token = token;
 		res.cookie("token", token).json({
 			success: true,
 			message: "User login successfully",
 			user,
-			token: token,
 		});
 	} catch (error) {
 		return res.status(500).json({
@@ -161,4 +168,59 @@ const getUserProfile = async (req, res) => {
 	}
 };
 
-export { signupUser, loginUser, logoutUser, getUserProfile };
+const editUserProfile = async (req, res) => {
+	try {
+		const userId = req.user._id;
+		const { email, username } = req.body;
+
+		const isValid = updateUserSchema.safeParse({ email, username });
+		if (!isValid.success) {
+			return res.status(400).json({
+				success: false,
+				message: "Validation error",
+				error: isValid.error.issues[0].message,
+			});
+		}
+
+		const existingUserWithEmail = await User.findOne({ email });
+		if (
+			existingUserWithEmail &&
+			existingUserWithEmail._id.toString() !== userId.toString()
+		) {
+			return res.status(400).json({
+				success: false,
+				message: "Email already exists.",
+			});
+		}
+
+		const updatedUser = await User.findByIdAndUpdate(
+			userId,
+			{
+				email,
+				username,
+			},
+			{ new: true }
+		);
+
+		if (!updatedUser) {
+			return res.status(500).json({
+				success: false,
+				message: "Error while updating the user",
+			});
+		}
+
+		return res.status(200).json({
+			success: true,
+			message: "User profile updated successfully",
+			user: updatedUser,
+		});
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			message: "Please try again later.",
+			error: error.message,
+		});
+	}
+};
+
+export { signupUser, loginUser, logoutUser, getUserProfile, editUserProfile };

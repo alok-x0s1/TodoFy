@@ -1,5 +1,5 @@
 {
-  "name": "full-stack-todo-app",
+  "name": "todofy-backend",
   "version": "1.0.0",
   "description": "A full stack TODO application.",
   "main": "server.js",
