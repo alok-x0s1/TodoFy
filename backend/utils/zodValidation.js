@@ -32,4 +32,16 @@ const todoZodSchema = z.object({
 		.max(500, "Description must be less than 500 characters"),
 });
 
-export { signupSchema, loginSchema, todoZodSchema };
+const updateUserSchema = z.object({
+	username: z
+		.string()
+		.trim()
+		.min(1, "Username must be at least 1 character long"),
+	email: z
+		.string()
+		.email({ message: "Invalid email address" })
+		.trim()
+		.toLowerCase(),
+});
+
+export { signupSchema, loginSchema, todoZodSchema, updateUserSchema };
