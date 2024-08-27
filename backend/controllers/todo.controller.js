@@ -162,6 +162,12 @@ const deleteTodo = async (req, res) => {
 			});
 		}
 
+		const updateUser = await User.findByIdAndUpdate(
+			existedTodo.owner._id,
+			{ $pull: { todos: id } },
+			{ new: true, runValidators: true }
+		);
+
 		res.status(200).json({
 			success: true,
 			message: "Todo deleted successfully",
