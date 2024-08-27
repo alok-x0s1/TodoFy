@@ -1,7 +1,16 @@
 import "./App.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Loader from "./components/Loader";
-import { CreateTodo, EditTodo, Home, Login, Profile, Signup, SingleTodo } from "./pages";
+import {
+	CreateTodo,
+	EditProfile,
+	EditTodo,
+	Home,
+	Login,
+	Profile,
+	Signup,
+	SingleTodo,
+} from "./pages";
 import NotFound from "./components/NotFound";
 
 function App() {
@@ -29,12 +38,18 @@ function App() {
 		{
 			path: "/todos",
 			element: <Home />,
-		},{
+		},
+		{
 			path: "/todo/:id",
-            element: <SingleTodo />,
-		},{
+			element: <SingleTodo />,
+		},
+		{
 			path: "/todos/edit/:id",
-            element: <EditTodo />,
+			element: <EditTodo />,
+		},
+		{
+			path: "/profile/edit",
+			element: <EditProfile />,
 		},
 		{
 			path: "/loading",
