@@ -6,11 +6,12 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/alok-x0s1/FullStack-Todo.git"
+    "url": "git+https://github.com/alok-x0s1/TodoFy.git"
   },
   "keywords": [
     "nodeJs",
@@ -23,9 +24,9 @@
   "author": "@lokYadav",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/alok-x0s1/FullStack-Todo/issues"
+    "url": "https://github.com/alok-x0s1/TodoFy/issues"
   },
-  "homepage": "https://github.com/alok-x0s1/FullStack-Todo#readme",
+  "homepage": "https://github.com/alok-x0s1/TodoFy#readme",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.6",
